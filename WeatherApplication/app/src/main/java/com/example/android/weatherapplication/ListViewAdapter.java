@@ -14,13 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ListViewAdapter extends BaseAdapter {
-    private final ArrayList mWeather;
-
+    private final HashMap mWeather;
+    //private final ArrayList mWeather;
+    int counter =0;
 
 
     public ListViewAdapter(HashMap<String, String> map) {
-        mWeather = new ArrayList();
-        mWeather.addAll(map.entrySet());
+        this.mWeather = map;
+        /*mWeather = new ArrayList();
+        mWeather.addAll(map.entrySet());*/
 
     }
 
@@ -30,14 +32,14 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public Map.Entry<String, String> getItem(int position) {
-        return (Map.Entry) mWeather.get(position);
+    public HashMap.Entry<String, String> getItem(int position) {
+        return (HashMap.Entry) mWeather.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         // TODO implement you own logic with ID
-        return 0;
+        return 1;
     }
 
     @Override
@@ -50,10 +52,10 @@ public class ListViewAdapter extends BaseAdapter {
             result = convertView;
         }
 
-        Map.Entry<String, String> item = getItem(position);
-
+        HashMap.Entry<String, String> item = getItem(position);
+        counter++;
         // TODO replace findViewById by ViewHolder
-        ((TextView) result.findViewById(android.R.id.text1)).setText(item.getKey());
+      ((TextView) result.findViewById(android.R.id.text1)).setText(item.getValue());
         ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
 
         return result;

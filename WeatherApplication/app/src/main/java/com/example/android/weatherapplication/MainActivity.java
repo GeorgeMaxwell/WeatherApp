@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     static String locationEntered = "london";
     static String temperature;
+    ListViewAdapter mAdapter;
     HashMap<String,String> weatherData = new HashMap<String,String>();
 
     @Override
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         cityListView = findViewById(R.id.city_listview);
+        mAdapter= new ListViewAdapter(weatherData);
+        cityListView.setAdapter(mAdapter);
         populateList();
     }
     public void populateList(){
@@ -53,13 +56,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        weatherData.put("Temperature:",weatherInformation[0]);
-        weatherData.put("Location:",weatherInformation[1]);
-
-        ListViewAdapter mAdapter = new ListViewAdapter(weatherData);
-
-
-        cityListView.setAdapter(mAdapter);
+        weatherData.put("Temperature",weatherInformation[0]);
+        weatherData.put("Location",weatherInformation[1]);
         mAdapter.notifyDataSetChanged();
     }
 
