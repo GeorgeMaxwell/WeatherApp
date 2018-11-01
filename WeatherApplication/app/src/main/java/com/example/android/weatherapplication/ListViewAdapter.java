@@ -1,14 +1,20 @@
 package com.example.android.weatherapplication;
 
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ListViewAdapter extends BaseAdapter {
     private final ArrayList mWeather;
 
-    public ListViewAdapter(Map<String, String> map) {
+    public ListViewAdapter(HashMap<String, String> map) {
         mWeather = new ArrayList();
         mWeather.addAll(map.entrySet());
     }
@@ -26,7 +32,7 @@ public class ListViewAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         // TODO implement you own logic with ID
-        return 0;
+        return (long) mWeather.get(position);
     }
 
     @Override
@@ -34,7 +40,7 @@ public class ListViewAdapter extends BaseAdapter {
         final View result;
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_adapter_item, parent, false);
+            result = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
         } else {
             result = convertView;
         }

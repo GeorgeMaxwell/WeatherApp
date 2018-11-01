@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                populateList();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -48,13 +49,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         listItems.add(temperature);
-        ListViewAdapter mAdapter = new ListViewAdapter(this,android.R.layout.simple_list_item_1,listItems);
-        cityListView = (ListView) findViewById(R.id.city_listview);
-        cityListView.setAdapter(mAdapter);
+       // ListViewAdapter mAdapter = new ListViewAdapter(this,android.R.layout.simple_list_item_1,listItems);
+
+
         weatherData.put("temperature:",temperature);
-        mAdapter.;
+        ListViewAdapter mAdapter = new ListViewAdapter(weatherData);
+        cityListView = findViewById(R.id.city_listview);
+        cityListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        cityListView.setAlpha(1);
+
 
     }
 
