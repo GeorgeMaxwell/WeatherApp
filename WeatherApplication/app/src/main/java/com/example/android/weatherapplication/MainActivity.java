@@ -10,12 +10,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     public static String location = "london";
     static String temperature;
+    HashMap<String,String> weatherData = new HashMap<String,String>();
+    ArrayList<String>listItems = new ArrayList<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +36,10 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        populateList();
     }
     public void populateList(){
+
         try {
             temperature = new GetWeatherData().execute(location).get();
         } catch (ExecutionException e) {
@@ -40,13 +47,20 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        cityListView
+        listItems.add(temperature);
+        ListViewAdapter mAdapter = new ListViewAdapter(this,android.R.layout.simple_list_item_1,listItems);
+        cityListView = (ListView) findViewById(R.id.city_listview);
+        cityListView.setAdapter(mAdapter);
+        weatherData.put("temperature:",temperature);
+        mAdapter.;
+        mAdapter.notifyDataSetChanged();
+        cityListView.setAlpha(1);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        cityListView = (ListView) findViewById(R.id.city_listview);
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

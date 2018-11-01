@@ -19,7 +19,7 @@ public class GetWeatherData extends  AsyncTask<String,Void,String>{
         String temperature = null;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(NetworkUtils.BuildURL("london"))
+                .url(NetworkUtils.BuildURL(location))
                 .build();
         try {
             Response response = client.newCall(request).execute();
