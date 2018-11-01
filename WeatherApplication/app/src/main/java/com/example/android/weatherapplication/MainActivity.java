@@ -1,5 +1,6 @@
 package com.example.android.weatherapplication;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,7 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +19,9 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
-    public static String location = "london";
+    static String locationEntered = "london";
     static String temperature;
     HashMap<String,String> weatherData = new HashMap<String,String>();
-    ArrayList<String>listItems = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,28 +39,28 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        cityListView = findViewById(R.id.city_listview);
         populateList();
     }
     public void populateList(){
 
+        String [] weatherInformation = new String[2];
         try {
-            temperature = new GetWeatherData().execute(location).get();
+            weatherInformation = new GetWeatherData().execute(locationEntered).get();
+
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        listItems.add(temperature);
-       // ListViewAdapter mAdapter = new ListViewAdapter(this,android.R.layout.simple_list_item_1,listItems);
+        weatherData.put("Temperature:",weatherInformation[0]);
+        weatherData.put("Location:",weatherInformation[1]);
 
-
-        weatherData.put("temperature:",temperature);
         ListViewAdapter mAdapter = new ListViewAdapter(weatherData);
-        cityListView = findViewById(R.id.city_listview);
+
+
         cityListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-
-
     }
 
     @Override

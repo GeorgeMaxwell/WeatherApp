@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -14,9 +16,12 @@ import java.util.Map;
 public class ListViewAdapter extends BaseAdapter {
     private final ArrayList mWeather;
 
+
+
     public ListViewAdapter(HashMap<String, String> map) {
         mWeather = new ArrayList();
         mWeather.addAll(map.entrySet());
+
     }
 
     @Override
@@ -32,7 +37,7 @@ public class ListViewAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         // TODO implement you own logic with ID
-        return (long) mWeather.get(position);
+        return 0;
     }
 
     @Override
