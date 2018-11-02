@@ -1,10 +1,8 @@
 package com.example.android.weatherapplication;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
-    static String temperature;
     ListViewAdapter mAdapter;
     ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
 
@@ -45,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
-        String locationEntered = "london";
+
+        String locationEntered = "London";
         populateList(locationEntered);
     }
     public void addCity (){
@@ -58,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
         dialogBuilder.setTitle("Custom dialog");
         dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(R.string.add_city_done_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String locationEntered = cityName.getText().toString();
                 populateList(locationEntered);
             }
         });
-        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialogBuilder.setNegativeButton(R.string.add_city_cancel_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 Toast toast = Toast.makeText(getApplicationContext(), "Cancelled", Toast.LENGTH_SHORT);
                 toast.show();
@@ -85,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
-        weatherDataForLocation.put("Temperature", weatherInformation[0]);
-        weatherDataForLocation.put("Location", weatherInformation[1]);
+        weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
+        weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
         weatherData.add(weatherDataForLocation);
 
         mAdapter.notifyDataSetChanged();
