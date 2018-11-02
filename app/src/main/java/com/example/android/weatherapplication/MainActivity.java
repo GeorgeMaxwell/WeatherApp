@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     static String temperature;
     ListViewAdapter mAdapter;
-    HashMap<String,String> weatherData = new HashMap<String,String>();
+    ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         cityListView = findViewById(R.id.city_listview);
 
-        mAdapter= new ListViewAdapter(weatherData);
+        mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
         String locationEntered = "london";
         populateList(locationEntered);
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         b.show();
     }
     public void populateList(String locationEntered){
-        String [] weatherInformation = new String[2];
+        String[] weatherInformation = new String[2];
         try {
             weatherInformation = new GetWeatherData().execute(locationEntered).get();
 
@@ -83,8 +84,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        weatherData.put("Temperature", weatherInformation[0]);
-        weatherData.put("Location", weatherInformation[1]);
+        HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
+        weatherDataForLocation.put("Temperature", weatherInformation[0]);
+        weatherDataForLocation.put("Location", weatherInformation[1]);
+        weatherData.add(weatherDataForLocation);
+
         mAdapter.notifyDataSetChanged();
     }
 
