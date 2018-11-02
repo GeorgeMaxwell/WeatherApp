@@ -1,5 +1,6 @@
 package com.example.android.weatherapplication;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -47,29 +49,37 @@ public class MainActivity extends AppCompatActivity {
         populateList(locationEntered);
     }
     public void addCity (){
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.editbox_add_city, null);
-        dialogBuilder.setView(dialogView);
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.add_city_dialog);
+        dialog.setTitle("Add City");
+        dialog.setCancelable(true);
 
-        final EditText cityName = (EditText) dialogView.findViewById(R.id.edit_add_city);
+        final EditText cityName = (EditText) dialog.findViewById(R.id.add_city_edit_text);
+        cityName.requestFocus();
 
-        dialogBuilder.setTitle("Custom dialog");
-        dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton(R.string.add_city_done_button, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                String locationEntered = cityName.getText().toString();
-                populateList(locationEntered);
+        Button addCityBtn = (Button) dialog.findViewById(R.id.add_city_submit_btn);
+        Button cancelCityBtn = (Button) dialog.findViewById(R.id.add_city_cancel_btn);
+
+        addCityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String locationEntered = cityName.getText().toString().trim().toLowerCase();
+                if (locationEntered.matches("[ a-zA-Z\\-]+")) {
+                    populateList(locationEntered);
+                    dialog.dismiss();
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.invalid_city_error_message), Toast.LENGTH_LONG).show();
+                }
             }
         });
-        dialogBuilder.setNegativeButton(R.string.add_city_cancel_button, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Cancelled", Toast.LENGTH_SHORT);
-                toast.show();
+
+        cancelCityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
             }
         });
-        AlertDialog b = dialogBuilder.create();
-        b.show();
+        dialog.show();
     }
     public void populateList(String locationEntered){
         String[] weatherInformation = new String[2];
