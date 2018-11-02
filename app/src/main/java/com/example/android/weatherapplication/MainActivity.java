@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     public void populateList(String locationEntered){
         String[] weatherInformation = new String[2];
         try {
-            weatherInformation = new GetWeatherData().execute(locationEntered).get();
+            weatherInformation = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
 
         } catch (ExecutionException e) {
             e.printStackTrace();
