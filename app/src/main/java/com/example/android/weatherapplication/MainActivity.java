@@ -1,21 +1,26 @@
 package com.example.android.weatherapplication;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
-    static String locationEntered = "london";
     static String temperature;
     ListViewAdapter mAdapter;
     HashMap<String,String> weatherData = new HashMap<String,String>();
@@ -31,9 +36,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                populateList();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+               addCity();
             }
         });
 
@@ -41,10 +44,35 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter= new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
-
-        populateList();
+        String locationEntered = "london";
+        populateList(locationEntered);
     }
-    public void populateList(){
+    public void addCity (){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.editbox_add_city, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText cityName = (EditText) dialogView.findViewById(R.id.edit_add_city);
+
+        dialogBuilder.setTitle("Custom dialog");
+        dialogBuilder.setMessage("Enter text below");
+        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String locationEntered = cityName.getText().toString();
+                populateList(locationEntered);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Cancelled", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+    public void populateList(String locationEntered){
         String [] weatherInformation = new String[2];
         try {
             weatherInformation = new GetWeatherData().execute(locationEntered).get();
