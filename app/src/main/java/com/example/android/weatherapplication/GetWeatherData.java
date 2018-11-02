@@ -13,13 +13,12 @@ import java.io.IOException;
 import java.net.URL;
 
 public class GetWeatherData extends  AsyncTask<String,Void,String []>{
-    String location = MainActivity.locationEntered;
     @Override
     protected String [] doInBackground(String... strings) {
         String [] weatherInformation = new String[2];
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(NetworkUtils.BuildURL(location))
+                .url(NetworkUtils.BuildURL(strings[0]))
                 .build();
         try {
             Response response = client.newCall(request).execute();
