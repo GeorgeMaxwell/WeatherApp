@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ListViewAdapter extends BaseAdapter {
-    ArrayList<HashMap> hashMap = new ArrayList<HashMap>();
+    ArrayList<HashMap<String, String>> hashMap = new ArrayList<>();
 
-    public ListViewAdapter(HashMap<String, String> weatherDataToDisplay) {
-        this.hashMap.add(weatherDataToDisplay);
+    public ListViewAdapter(ArrayList<HashMap<String, String>> weatherDataToDisplay) {
+        this.hashMap = weatherDataToDisplay;
     }
 
     @Override
@@ -51,19 +51,5 @@ public class ListViewAdapter extends BaseAdapter {
         textViewTempVal.setText(currentItem.get("Temperature"));
 
         return convertView;
-        /*final View result;
-
-        if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
-        } else {
-            result = convertView;
-        }
-
-        HashMap<String, String> weatherItem = this.getItem(position);
-
-        ((TextView) result.findViewById(android.R.id.text1)).setText(weatherItem.get("Location"));
-        ((TextView) result.findViewById(android.R.id.text2)).setText(weatherItem.get("Temperature"));
-
-        return result;*/
     }
 }
