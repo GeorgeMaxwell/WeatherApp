@@ -1,7 +1,8 @@
 package com.example.android.weatherapplication;
-
+import android.content.Context;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,10 +47,31 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
-
-        String locationEntered = "London";
-        populateList(locationEntered);
+        loadCities();
     }
+    public void loadCities(){
+        SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
+        Set<String> set = prefs.getStringSet("CITY_VALUES", null);
+        if(set !=null) {
+            for (String locationEntered : set) {
+                populateList(locationEntered);
+            }
+        }
+    }
+
+
+    public void storeCities(ArrayList<HashMap<String,String>> weatherData){
+        Set<String> set = new HashSet<>();
+        for(HashMap<String,String> map : weatherData){
+            set.add(map.get(getString(R.string.weather_data_location_key)));
+        }
+        SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet("CITY_VALUES",set);
+        editor.commit();
+    }
+
+
     public void addCity (){
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.add_city_dialog);
@@ -96,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
         weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
         weatherData.add(weatherDataForLocation);
-
+        storeCities(weatherData);
         mAdapter.notifyDataSetChanged();
     }
 
