@@ -21,6 +21,9 @@ public class GetWeatherData extends  AsyncTask<String, Void, String []>{
                 .build();
         try {
             Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()){
+                return null;
+            }
             String jsonData = response.body().string();
             weatherInformation[0]= new JSONObject(jsonData).getJSONObject("main").getString("temp") + "°C";
             weatherInformation[1]= new JSONObject(jsonData).getString("name");
