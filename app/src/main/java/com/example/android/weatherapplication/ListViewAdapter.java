@@ -10,20 +10,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ListViewAdapter extends BaseAdapter {
-    ArrayList<HashMap<String, String>> hashMap = new ArrayList<>();
+    ArrayList<HashMap<String, String>> listOfHashMap = new ArrayList<>();
 
     public ListViewAdapter(ArrayList<HashMap<String, String>> weatherDataToDisplay) {
-        this.hashMap = weatherDataToDisplay;
+        this.listOfHashMap = weatherDataToDisplay;
     }
 
     @Override
     public int getCount() {
-        return this.hashMap.size();
+        return this.listOfHashMap.size();
     }
 
     @Override
     public HashMap<String, String> getItem(int position) {
-        return this.hashMap.get(position);
+        return this.listOfHashMap.get(position);
     }
 
     @Override

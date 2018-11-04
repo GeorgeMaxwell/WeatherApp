@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -45,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
         cityListView = findViewById(R.id.city_listview);
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
+
+        cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                // TODO Auto-generated method stub
+                removeCity(pos, id);
+                return true;
+            }
+        });
+
+
         loadCities();
     }
     public void loadCities(){
@@ -62,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet("CITY_VALUES", this.citiesAdded);
         editor.commit();
+    }
+    public  void removeCity(int pos, long id){
+        //weatherData.get(pos);
+        this.citiesAdded.remove(this.weatherData.get(pos).get(getString(R.string.weather_data_location_key)).toUpperCase());
+        this.weatherData.remove(this.weatherData.get(pos));
+        mAdapter.notifyDataSetChanged();
+        storeCities();
     }
 
 
