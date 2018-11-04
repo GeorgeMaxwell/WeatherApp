@@ -1,15 +1,20 @@
 package com.example.android.weatherapplication;
 
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     ListViewAdapter mAdapter;
     ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
     Set<String> citiesAdded = new HashSet<>();
+    Boolean visible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +52,74 @@ public class MainActivity extends AppCompatActivity {
         cityListView = findViewById(R.id.city_listview);
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-        cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+        cityListView.setMultiChoiceModeListener(new  AbsListView.MultiChoiceModeListener() {
+            @Override
+            public boolean  onPrepareActionMode(ActionMode mode, Menu menu) {
+                // TODO  Auto-generated method stub
+                return false;
+            }
+            @Override
+            public void  onDestroyActionMode(ActionMode mode) {
+                // TODO  Auto-generated method stub
+            }
+            @Override
+            public boolean  onCreateActionMode(ActionMode mode, Menu menu) {
+                // TODO  Auto-generated method stub
+                mode.getMenuInflater().inflate(R.menu.menu_main, menu);
+                return true;
+            }
+            @Override
+            public boolean  onActionItemClicked(final ActionMode mode, MenuItem item) {
+                // TODO  Auto-generated method stub
+                switch  (item.getItemId()) {
+                    case R.id.select_all:
+                        final int checkedCount  = weatherData.size();
+                        // If item  is already selected or checked then remove or
+                        // unchecked  and again select all
+                        for (int i = 0; i <  checkedCount; i++) {
+                            cityListView.setItemChecked(i,   true);
+                            //  listviewadapter.toggleSelection(i);
+                        }
+                        // Set the  CAB title according to total checked items
+                        // Calls  toggleSelection method from ListViewAdapter Class
+                        // Count no.  of selected item and print it
+                        mode.setTitle(checkedCount  + "  Selected");
+                        return true;
+                    case R.id.action_delete_item:
+                        // Add  dialog for confirmation to delete selected item
+                        // record.
+                        AlertDialog.Builder  builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("Do you  want to delete selected record(s)?");
+                        AlertDialog alert =  builder.create();
+                        alert.setIcon(R.id.action_delete_item);// dialog  Icon
+                        alert.setTitle("Confirmation"); // dialog  Title
+                        alert.show();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            @Override
+
+            public void  onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                // TODO  Auto-generated method stub
+                final int checkedCount  = cityListView.getCheckedItemCount();
+                // Set the  CAB title according to total checked items
+                mode.setTitle(checkedCount  + "  Selected");
+                // Calls  toggleSelection method from ListViewAdapter Class
+                //adapter.toggleSelection(position);
+            }
+        });
+
+
+
+
+      /*  cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
@@ -55,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 removeCity(pos, id);
                 return true;
             }
-        });
+        });*/
 
 
         loadCities();
@@ -78,9 +150,14 @@ public class MainActivity extends AppCompatActivity {
     }
     public  void removeCity(int pos, long id){
         //weatherData.get(pos);
+        invalidateOptionsMenu();
+        //deleteItem.setVisible(true);
         this.citiesAdded.remove(this.weatherData.get(pos).get(getString(R.string.weather_data_location_key)).toUpperCase());
         this.weatherData.remove(this.weatherData.get(pos));
         mAdapter.notifyDataSetChanged();
+        // Inflate the menu; this adds items to the action bar if it is present.
+        visible = true;
+        invalidateOptionsMenu();
         storeCities();
     }
 
@@ -147,7 +224,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        MenuItem deleteItem = menu.findItem(R.id.action_delete_item);
+
+        if(visible == false) {
+            deleteItem.setVisible(false);
+        }
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
