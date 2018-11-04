@@ -7,23 +7,22 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ListViewAdapter extends BaseAdapter {
-    ArrayList<HashMap<String, String>> listOfHashMap = new ArrayList<>();
+    ArrayList<LocationWeather> weatherForLocations = new ArrayList<>();
 
-    public ListViewAdapter(ArrayList<HashMap<String, String>> weatherDataToDisplay) {
-        this.listOfHashMap = weatherDataToDisplay;
+    public ListViewAdapter(ArrayList<LocationWeather> weatherDataToDisplay) {
+        this.weatherForLocations = weatherDataToDisplay;
     }
 
     @Override
     public int getCount() {
-        return this.listOfHashMap.size();
+        return this.weatherForLocations.size();
     }
 
     @Override
-    public HashMap<String, String> getItem(int position) {
-        return this.listOfHashMap.get(position);
+    public LocationWeather getItem(int position) {
+        return this.weatherForLocations.get(position);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ListViewAdapter extends BaseAdapter {
                     inflate(android.R.layout.simple_list_item_2, parent, false);
         }
 
-        HashMap<String, String> currentItem = (HashMap<String, String>) getItem(position);
+        LocationWeather currentItem = (LocationWeather) getItem(position);
 
         // get the TextView for item name and item description
         TextView textViewLocation = (TextView)
@@ -47,8 +46,8 @@ public class ListViewAdapter extends BaseAdapter {
                 convertView.findViewById(android.R.id.text2);
 
         //sets the text for item name and item description from the current item object
-        textViewLocation.setText(currentItem.get("Location"));
-        textViewTempVal.setText(currentItem.get("Temperature"));
+        textViewLocation.setText(currentItem.getCityName());
+        textViewTempVal.setText(currentItem.getTempText());
 
         return convertView;
     }

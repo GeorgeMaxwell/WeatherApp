@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     ListViewAdapter mAdapter;
-    ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
+    ArrayList<LocationWeather> weatherData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public void loadCities(){
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         Set<String> set = prefs.getStringSet("CITY_VALUES", null);
-        if(set !=null) {
+        if(set != null) {
             for (String locationEntered : set) {
                 populateList(locationEntered);
             }
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
         storeCities();
     }
-
 
     public void addCity (){
         final Dialog dialog = new Dialog(this);
@@ -119,24 +118,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void populateList(String locationEntered){
-        String[] weatherInformation = new String[2];
+        LocationWeather weatherForLocationObj = null;
         try {
-            weatherInformation = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
-
+            weatherForLocationObj = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (weatherInformation != null){
-            HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
-            weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
-            weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
-            weatherData.add(weatherDataForLocation);
-
+        if (weatherForLocationObj != null) {
+            this.weatherData.add(weatherForLocationObj);
             storeCities();
-
             mAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.city_not_found_error_message), Toast.LENGTH_LONG).show();
@@ -145,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> getLocations() {
         ArrayList<String> locations = new ArrayList<>();
-        for (HashMap<String, String> locationHasMap : this.weatherData) {
-            locations.add(locationHasMap.get(getString(R.string.weather_data_location_key)).toUpperCase());
+        for (LocationWeather locationWeatherObj : this.weatherData) {
+            locations.add(locationWeatherObj.getCityName().toUpperCase());
         }
 
         return locations;
