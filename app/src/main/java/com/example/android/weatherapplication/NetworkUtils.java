@@ -11,11 +11,11 @@ public class NetworkUtils {
     static String PARAM_UNITS = "units";
     static String units = "metric";
 
-    public static URL BuildURL(String location){
+    public static URL BuildURL(String location, String apiKey){
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendQueryParameter(PARAM_QUERY, location)
                 .appendQueryParameter(PARAM_UNITS, units)
-                .appendQueryParameter("APPID","b13d901112bab4a7721793930e8a2a48")
+                .appendQueryParameter("APPID", apiKey)
                 .build();
         URL url = null;
         try {

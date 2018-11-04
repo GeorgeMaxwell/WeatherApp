@@ -10,15 +10,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URL;
 
-public class GetWeatherData extends  AsyncTask<String,Void,String []>{
+public class GetWeatherData extends  AsyncTask<String, Void, String []>{
     @Override
     protected String [] doInBackground(String... strings) {
         String [] weatherInformation = new String[2];
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(NetworkUtils.BuildURL(strings[0]))
+                .url(NetworkUtils.BuildURL(strings[0], strings[1]))
                 .build();
         try {
             Response response = client.newCall(request).execute();

@@ -5,4 +5,8 @@
     <string name="weather_data_location_key">Location</string>
     <string name="add_city_done_button">Done</string>
     <string name="add_city_cancel_button">Cancel</string>
+    <string name="invalid_city_error_message">You have typed in an invalid city, please try again</string>
+    <string name="add_city_dialog_hint">Enter city</string>
+    <string name="add_city_dialog_cancel_btn">CANCEL</string>
+    <string name="add_city_dialog_submit_btn">ADD</string>
 </resources>
