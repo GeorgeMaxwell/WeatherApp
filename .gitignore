@@ -5,7 +5,9 @@
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
+/.app/src/main/res/values/api_keys.xml
 .DS_Store
 /build
 /captures
 .externalNativeBuild
+.gradle
