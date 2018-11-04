@@ -1,15 +1,12 @@
 package com.example.android.weatherapplication;
-import android.content.Context;
-import android.content.Context;
+
 import android.app.Dialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     ListViewAdapter mAdapter;
     ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
+    Set<String> citiesAdded = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +57,10 @@ public class MainActivity extends AppCompatActivity {
         }
         //getSharedPreferences("LIST_OF_CITIES",Context.MODE_PRIVATE).edit().clear().commit(); //to clear current preferences.
     }
-    public void storeCities(ArrayList<HashMap<String,String>> weatherData){
-        Set<String> set = new HashSet<>();
-        for(HashMap<String,String> map : weatherData){
-            set.add(map.get(getString(R.string.weather_data_location_key)));
-        }
+    public void storeCities(){
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet("CITY_VALUES",set);
+        editor.putStringSet("CITY_VALUES", this.citiesAdded);
         editor.commit();
     }
 
@@ -86,10 +80,12 @@ public class MainActivity extends AppCompatActivity {
         addCityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String locationEntered = cityName.getText().toString().trim().toLowerCase();
-                if (locationEntered.matches("[ a-zA-Z\\-]+")) {
+                String locationEntered = cityName.getText().toString().trim().toUpperCase();
+                if (locationEntered.matches("[ a-zA-Z\\-]+") && !citiesAdded.contains(locationEntered)) {
                     populateList(locationEntered);
                     dialog.dismiss();
+                } else if (citiesAdded.contains(locationEntered)) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.duplicate_city_error_message), Toast.LENGTH_LONG).show();
                 } else{
                     Toast.makeText(getApplicationContext(), getString(R.string.invalid_character_error_message), Toast.LENGTH_LONG).show();
                 }
@@ -119,7 +115,10 @@ public class MainActivity extends AppCompatActivity {
         weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
         weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
         weatherData.add(weatherDataForLocation);
-        storeCities(weatherData);
+        citiesAdded.add(weatherInformation[1].toUpperCase());
+
+        storeCities();
+
         mAdapter.notifyDataSetChanged();
         }
         else
