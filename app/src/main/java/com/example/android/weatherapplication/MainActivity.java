@@ -1,5 +1,6 @@
 package com.example.android.weatherapplication;
 import android.content.Context;
+import android.content.Context;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -58,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
     public void storeCities(ArrayList<HashMap<String,String>> weatherData){
         Set<String> set = new HashSet<>();
         for(HashMap<String,String> map : weatherData){
