@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         cityListView = findViewById(R.id.city_listview);
-
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
         loadCities();
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 populateList(locationEntered);
             }
         }
+        //getSharedPreferences("LIST_OF_CITIES",Context.MODE_PRIVATE).edit().clear().commit(); //to clear current preferences.
     }
     public void storeCities(ArrayList<HashMap<String,String>> weatherData){
         Set<String> set = new HashSet<>();
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     populateList(locationEntered);
                     dialog.dismiss();
                 } else{
-                    Toast.makeText(getApplicationContext(), getString(R.string.invalid_city_error_message), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.invalid_character_error_message), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -114,13 +114,16 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        if (weatherInformation != null){
         HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
         weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
         weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
         weatherData.add(weatherDataForLocation);
         storeCities(weatherData);
         mAdapter.notifyDataSetChanged();
+        }
+        else
+            Toast.makeText(getApplicationContext(), getString(R.string.city_not_found_error_message), Toast.LENGTH_LONG).show();
     }
 
     @Override
