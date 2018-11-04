@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     ListViewAdapter mAdapter;
     ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
     Set<String> citiesAdded = new HashSet<>();
-    Boolean visible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,86 +48,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        cityListView = findViewById(R.id.city_listview);
-        mAdapter = new ListViewAdapter(weatherData);
-        cityListView.setAdapter(mAdapter);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-        cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-
-        cityListView.setMultiChoiceModeListener(new  AbsListView.MultiChoiceModeListener() {
-            @Override
-            public boolean  onPrepareActionMode(ActionMode mode, Menu menu) {
-                // TODO  Auto-generated method stub
-                return false;
-            }
-            @Override
-            public void  onDestroyActionMode(ActionMode mode) {
-                // TODO  Auto-generated method stub
-            }
-            @Override
-            public boolean  onCreateActionMode(ActionMode mode, Menu menu) {
-                // TODO  Auto-generated method stub
-                mode.getMenuInflater().inflate(R.menu.menu_main, menu);
-                return true;
-            }
-            @Override
-            public boolean  onActionItemClicked(final ActionMode mode, MenuItem item) {
-                // TODO  Auto-generated method stub
-                switch  (item.getItemId()) {
-                    case R.id.select_all:
-                        final int checkedCount  = weatherData.size();
-                        // If item  is already selected or checked then remove or
-                        // unchecked  and again select all
-                        for (int i = 0; i <  checkedCount; i++) {
-                            cityListView.setItemChecked(i,   true);
-                            //  listviewadapter.toggleSelection(i);
-                        }
-                        // Set the  CAB title according to total checked items
-                        // Calls  toggleSelection method from ListViewAdapter Class
-                        // Count no.  of selected item and print it
-                        mode.setTitle(checkedCount  + "  Selected");
-                        return true;
-                    case R.id.action_delete_item:
-                        // Add  dialog for confirmation to delete selected item
-                        // record.
-                        AlertDialog.Builder  builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setMessage("Do you  want to delete selected record(s)?");
-                        AlertDialog alert =  builder.create();
-                        alert.setIcon(R.id.action_delete_item);// dialog  Icon
-                        alert.setTitle("Confirmation"); // dialog  Title
-                        alert.show();
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            @Override
-
-            public void  onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                // TODO  Auto-generated method stub
-                final int checkedCount  = cityListView.getCheckedItemCount();
-                // Set the  CAB title according to total checked items
-                mode.setTitle(checkedCount  + "  Selected");
-                // Calls  toggleSelection method from ListViewAdapter Class
-                //adapter.toggleSelection(position);
-            }
-        });
-
-
-
-
-      /*  cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                // TODO Auto-generated method stub
-                removeCity(pos, id);
-                return true;
-            }
-        });*/
-
+        cityListView = findViewById(R.id.city_listview);
+        cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        mAdapter = new ListViewAdapter(weatherData);
+        cityListView.setAdapter(mAdapter);
 
         loadCities();
     }
@@ -148,16 +74,12 @@ public class MainActivity extends AppCompatActivity {
         editor.putStringSet("CITY_VALUES", this.citiesAdded);
         editor.commit();
     }
-    public  void removeCity(int pos, long id){
-        //weatherData.get(pos);
-        invalidateOptionsMenu();
-        //deleteItem.setVisible(true);
+
+    public void removeCity(int pos, long id){
         this.citiesAdded.remove(this.weatherData.get(pos).get(getString(R.string.weather_data_location_key)).toUpperCase());
         this.weatherData.remove(this.weatherData.get(pos));
         mAdapter.notifyDataSetChanged();
-        // Inflate the menu; this adds items to the action bar if it is present.
-        visible = true;
-        invalidateOptionsMenu();
+
         storeCities();
     }
 
@@ -220,19 +142,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             Toast.makeText(getApplicationContext(), getString(R.string.city_not_found_error_message), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        MenuItem deleteItem = menu.findItem(R.id.action_delete_item);
-
-        if(visible == false) {
-            deleteItem.setVisible(false);
-        }
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
     }
 
     @Override
