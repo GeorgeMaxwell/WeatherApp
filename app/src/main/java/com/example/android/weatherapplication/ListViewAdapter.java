@@ -1,5 +1,6 @@
 package com.example.android.weatherapplication;
 
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,11 @@ import java.util.ArrayList;
 
 public class ListViewAdapter extends BaseAdapter {
     ArrayList<LocationWeather> weatherForLocations = new ArrayList<>();
+    SparseBooleanArray mSelectedItemsIds;
 
     public ListViewAdapter(ArrayList<LocationWeather> weatherDataToDisplay) {
         this.weatherForLocations = weatherDataToDisplay;
+        this.mSelectedItemsIds = new SparseBooleanArray();
     }
 
     @Override
@@ -50,5 +53,41 @@ public class ListViewAdapter extends BaseAdapter {
         textViewTempVal.setText(currentItem.getTempText());
 
         return convertView;
+    }
+
+    void remove(LocationWeather obj) {
+        this.weatherForLocations.remove(obj);
+        notifyDataSetChanged();
+    }
+
+    ArrayList<LocationWeather> get() {
+        return this.weatherForLocations;
+    }
+
+    void toggleSelection(int position) {
+        selectView(position, !mSelectedItemsIds.get(position));
+    }
+
+    void removeSelection() {
+        mSelectedItemsIds = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
+
+    void selectView(int position, boolean value) {
+        if (value) {
+            mSelectedItemsIds.put(position, value);
+        } else {
+            mSelectedItemsIds.delete(position);
+        }
+
+        notifyDataSetChanged();
+    }
+
+    int getSelectedCount() {
+        return mSelectedItemsIds.size();
+    }
+
+    SparseBooleanArray getSelectedIds() {
+        return this.mSelectedItemsIds;
     }
 }

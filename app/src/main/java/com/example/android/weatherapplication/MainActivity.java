@@ -1,28 +1,24 @@
 package com.example.android.weatherapplication;
 
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -51,9 +47,56 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         cityListView = findViewById(R.id.city_listview);
-        cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mAdapter = new ListViewAdapter(weatherData);
         cityListView.setAdapter(mAdapter);
+
+        cityListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                final int checkedCount = cityListView.getCheckedItemCount();
+                mode.setTitle(checkedCount + " Selected");
+                mAdapter.toggleSelection(position);
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_main, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_delete:
+                        SparseBooleanArray selected = mAdapter.getSelectedIds();
+                        for (int i = (selected.size() - 1); i >= 0; i--) {
+                            if (selected.valueAt(i)) {
+                                LocationWeather selectedItem = mAdapter.getItem(selected.keyAt(i));
+                                weatherData.remove(selectedItem);
+                                mAdapter.remove(selectedItem);
+                                storeCities();
+                            }
+                        }
+
+                        mode.finish();
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mAdapter.removeSelection();
+            }
+        });
 
         loadCities();
     }
@@ -154,9 +197,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

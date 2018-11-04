@@ -13,4 +13,5 @@
     <string name="add_city_dialog_hint">Enter city</string>
     <string name="add_city_dialog_cancel_btn">CANCEL</string>
     <string name="add_city_dialog_submit_btn">ADD</string>
+    <string name="action_delete">Delete</string>
 </resources>
