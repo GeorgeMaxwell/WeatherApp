@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     ListViewAdapter mAdapter;
     ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
-    Set<String> citiesAdded = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +72,10 @@ public class MainActivity extends AppCompatActivity {
     public void storeCities(){
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet("CITY_VALUES", this.citiesAdded);
+        editor.putStringSet("CITY_VALUES", new HashSet<String>(getLocations()));
         editor.commit();
     }
     public  void removeCity(int pos, long id){
-        //weatherData.get(pos);
-        this.citiesAdded.remove(this.weatherData.get(pos).get(getString(R.string.weather_data_location_key)).toUpperCase());
         this.weatherData.remove(this.weatherData.get(pos));
         mAdapter.notifyDataSetChanged();
         storeCities();
@@ -101,10 +98,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String locationEntered = cityName.getText().toString().trim().toUpperCase();
-                if (locationEntered.matches("[ a-zA-Z\\-]+") && !citiesAdded.contains(locationEntered)) {
+                if (locationEntered.matches("[ a-zA-Z\\-]+") && !getLocations().contains(locationEntered)) {
                     populateList(locationEntered);
                     dialog.dismiss();
-                } else if (citiesAdded.contains(locationEntered)) {
+                } else if (getLocations().contains(locationEntered)) {
                     Toast.makeText(getApplicationContext(), getString(R.string.duplicate_city_error_message), Toast.LENGTH_LONG).show();
                 } else{
                     Toast.makeText(getApplicationContext(), getString(R.string.invalid_character_error_message), Toast.LENGTH_LONG).show();
@@ -120,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         });
         dialog.show();
     }
+
     public void populateList(String locationEntered){
         String[] weatherInformation = new String[2];
         try {
@@ -130,19 +128,28 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         if (weatherInformation != null){
-        HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
-        weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
-        weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
-        weatherData.add(weatherDataForLocation);
-        citiesAdded.add(weatherInformation[1].toUpperCase());
+            HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
+            weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
+            weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
+            weatherData.add(weatherDataForLocation);
 
-        storeCities();
+            storeCities();
 
-        mAdapter.notifyDataSetChanged();
-        }
-        else
+            mAdapter.notifyDataSetChanged();
+        } else {
             Toast.makeText(getApplicationContext(), getString(R.string.city_not_found_error_message), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    ArrayList<String> getLocations() {
+        ArrayList<String> locations = new ArrayList<>();
+        for (HashMap<String, String> locationHasMap : this.weatherData) {
+            locations.add(locationHasMap.get(getString(R.string.weather_data_location_key)).toUpperCase());
+        }
+
+        return locations;
     }
 
     @Override
