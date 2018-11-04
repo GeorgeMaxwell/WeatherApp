@@ -30,8 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
     ListView cityListView;
     ListViewAdapter mAdapter;
-    ArrayList<HashMap<String,String>> weatherData = new ArrayList<HashMap<String, String>>();
-    Set<String> citiesAdded = new HashSet<>();
+    ArrayList<LocationWeather> weatherData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,28 +60,27 @@ public class MainActivity extends AppCompatActivity {
     public void loadCities(){
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         Set<String> set = prefs.getStringSet("CITY_VALUES", null);
-        if(set !=null) {
+        if(set != null) {
             for (String locationEntered : set) {
                 populateList(locationEntered);
             }
         }
         //getSharedPreferences("LIST_OF_CITIES",Context.MODE_PRIVATE).edit().clear().commit(); //to clear current preferences.
     }
+
     public void storeCities(){
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet("CITY_VALUES", this.citiesAdded);
+        editor.putStringSet("CITY_VALUES", new HashSet<String>(getLocations()));
         editor.commit();
     }
 
     public void removeCity(int pos, long id){
-        this.citiesAdded.remove(this.weatherData.get(pos).get(getString(R.string.weather_data_location_key)).toUpperCase());
-        this.weatherData.remove(this.weatherData.get(pos));
+        this.weatherData.remove(this.weatherData.get(0));
         mAdapter.notifyDataSetChanged();
 
         storeCities();
     }
-
 
     public void addCity (){
         final Dialog dialog = new Dialog(this);
@@ -100,10 +98,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String locationEntered = cityName.getText().toString().trim().toUpperCase();
-                if (locationEntered.matches("[ a-zA-Z\\-]+") && !citiesAdded.contains(locationEntered)) {
+                if (locationEntered.matches("[ a-zA-Z\\-]+") && !getLocations().contains(locationEntered)) {
                     populateList(locationEntered);
                     dialog.dismiss();
-                } else if (citiesAdded.contains(locationEntered)) {
+                } else if (getLocations().contains(locationEntered)) {
                     Toast.makeText(getApplicationContext(), getString(R.string.duplicate_city_error_message), Toast.LENGTH_LONG).show();
                 } else{
                     Toast.makeText(getApplicationContext(), getString(R.string.invalid_character_error_message), Toast.LENGTH_LONG).show();
@@ -119,29 +117,33 @@ public class MainActivity extends AppCompatActivity {
         });
         dialog.show();
     }
-    public void populateList(String locationEntered){
-        String[] weatherInformation = new String[2];
-        try {
-            weatherInformation = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
 
+    public void populateList(String locationEntered){
+        LocationWeather weatherForLocationObj = null;
+        try {
+            weatherForLocationObj = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (weatherInformation != null){
-        HashMap<String, String> weatherDataForLocation = new HashMap<String, String>();
-        weatherDataForLocation.put(getString(R.string.weather_data_temp_key), weatherInformation[0]);
-        weatherDataForLocation.put(getString(R.string.weather_data_location_key), weatherInformation[1]);
-        weatherData.add(weatherDataForLocation);
-        citiesAdded.add(weatherInformation[1].toUpperCase());
 
-        storeCities();
-
-        mAdapter.notifyDataSetChanged();
-        }
-        else
+        if (weatherForLocationObj != null) {
+            this.weatherData.add(weatherForLocationObj);
+            storeCities();
+            mAdapter.notifyDataSetChanged();
+        } else {
             Toast.makeText(getApplicationContext(), getString(R.string.city_not_found_error_message), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    ArrayList<String> getLocations() {
+        ArrayList<String> locations = new ArrayList<>();
+        for (LocationWeather locationWeatherObj : this.weatherData) {
+            locations.add(locationWeatherObj.getCityName().toUpperCase());
+        }
+
+        return locations;
     }
 
     @Override

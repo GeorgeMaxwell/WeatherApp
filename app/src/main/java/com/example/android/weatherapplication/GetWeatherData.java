@@ -11,10 +11,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class GetWeatherData extends  AsyncTask<String, Void, String []>{
+public class GetWeatherData extends  AsyncTask<String, Void, LocationWeather>{
     @Override
-    protected String [] doInBackground(String... strings) {
-        String [] weatherInformation = new String[2];
+    protected LocationWeather doInBackground(String... strings) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(NetworkUtils.BuildURL(strings[0], strings[1]))
@@ -25,13 +24,13 @@ public class GetWeatherData extends  AsyncTask<String, Void, String []>{
                 return null;
             }
             String jsonData = response.body().string();
-            weatherInformation[0]= new JSONObject(jsonData).getJSONObject("main").getString("temp") + "°C";
-            weatherInformation[1]= new JSONObject(jsonData).getString("name");
+            return new LocationWeather(new JSONObject(jsonData).getString("name"), new JSONObject(jsonData).getJSONObject("main").getDouble("temp"));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return weatherInformation;
+
+        return null;
     }
 }
