@@ -11,6 +11,7 @@ public class NetworkUtils {
     static String PARAM_UNITS = "units";
     static String units = "metric";
 
+    //Creates the URL to make api requests with
     public static URL BuildURL(String location, String apiKey){
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendQueryParameter(PARAM_QUERY, location)

@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class GetWeatherData extends  AsyncTask<String, Void, LocationWeather>{
+
+    //Retrieves the json data from the API call and stores location name and temperature as a JSONObject
     @Override
     protected LocationWeather doInBackground(String... strings) {
         OkHttpClient client = new OkHttpClient();

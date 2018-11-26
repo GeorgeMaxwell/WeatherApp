@@ -55,6 +55,7 @@ public class ListViewAdapter extends BaseAdapter {
         return convertView;
     }
 
+    //Removes LocationWeatherObjects from the arraylist
     void remove(LocationWeather obj) {
         this.weatherForLocations.remove(obj);
         notifyDataSetChanged();
@@ -64,15 +65,19 @@ public class ListViewAdapter extends BaseAdapter {
         return this.weatherForLocations;
     }
 
+
+    // toggles highlight on or off on selected item
     void toggleSelection(int position) {
         selectView(position, !mSelectedItemsIds.get(position));
     }
 
+    //Deletes all highlighted items from the SparseBooleanArray
     void removeSelection() {
         mSelectedItemsIds = new SparseBooleanArray();
         notifyDataSetChanged();
     }
 
+    //Highlights item unless it is already highlighted, at which point it removes highlight
     void selectView(int position, boolean value) {
         if (value) {
             mSelectedItemsIds.put(position, value);
@@ -83,6 +88,7 @@ public class ListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    // returns number of highlighted items
     int getSelectedCount() {
         return mSelectedItemsIds.size();
     }

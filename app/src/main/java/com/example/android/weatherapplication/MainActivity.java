@@ -30,27 +30,30 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Sets the main layout the user is greeted with
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        //Creats the fab and adds a listener
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               addCity();
+                addCity();
             }
         });
-
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
         cityListView = findViewById(R.id.city_listview);
         cityListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mAdapter = new ListViewAdapter(weatherData);
-        cityListView.setAdapter(mAdapter);
 
+        //Apply adapter to list view to detect long press
+        cityListView.setAdapter(mAdapter);
         cityListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -100,10 +103,12 @@ public class MainActivity extends AppCompatActivity {
 
         loadCities();
     }
-    public void loadCities(){
+
+    //Displays the cities that were listed before the user exited the app
+    public void loadCities() {
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         Set<String> set = prefs.getStringSet("CITY_VALUES", null);
-        if(set != null) {
+        if (set != null) {
             for (String locationEntered : set) {
                 populateList(locationEntered);
             }
@@ -111,21 +116,16 @@ public class MainActivity extends AppCompatActivity {
         //getSharedPreferences("LIST_OF_CITIES",Context.MODE_PRIVATE).edit().clear().commit(); //to clear current preferences.
     }
 
-    public void storeCities(){
+    //Stores the cities the user can see, so that they can be loaded if the user restarts the app
+    public void storeCities() {
         SharedPreferences prefs = getSharedPreferences("LIST_OF_CITIES", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet("CITY_VALUES", new HashSet<String>(getLocations()));
         editor.commit();
     }
 
-    public void removeCity(int pos, long id){
-        this.weatherData.remove(this.weatherData.get(0));
-        mAdapter.notifyDataSetChanged();
-
-        storeCities();
-    }
-
-    public void addCity (){
+    //Adds a city to the list view,
+    public void addCity() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.add_city_dialog);
         dialog.setTitle("Add City");
@@ -141,12 +141,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String locationEntered = cityName.getText().toString().trim().toUpperCase();
-                if (locationEntered.matches("[ a-zA-Z\\-]+") && !getLocations().contains(locationEntered)) {
+                if (locationEntered.matches("[ a-zA-Z\\-]+") && !getLocations().contains(locationEntered)) {//Regex to check for valid characters
                     populateList(locationEntered);
                     dialog.dismiss();
                 } else if (getLocations().contains(locationEntered)) {
+                    //If location is already in the list view
                     Toast.makeText(getApplicationContext(), getString(R.string.duplicate_city_error_message), Toast.LENGTH_LONG).show();
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.invalid_character_error_message), Toast.LENGTH_LONG).show();
                 }
             }
@@ -161,7 +162,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void populateList(String locationEntered){
+
+    //Makes the API call with the city the user entered
+    public void populateList(String locationEntered) {
         LocationWeather weatherForLocationObj = null;
         try {
             weatherForLocationObj = new GetWeatherData().execute(locationEntered, getString(R.string.OPENWEATHER_API_KEY)).get();
@@ -180,12 +183,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ArrayList<String> getLocations() {
+
+    //Gets current locations in the list view
+    public ArrayList<String> getLocations() {
         ArrayList<String> locations = new ArrayList<>();
         for (LocationWeather locationWeatherObj : this.weatherData) {
             locations.add(locationWeatherObj.getCityName().toUpperCase());
         }
-
         return locations;
     }
 
@@ -195,11 +199,6 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-            return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }

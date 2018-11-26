@@ -3,7 +3,7 @@ package com.example.android.weatherapplication;
 public class LocationWeather {
     String name;
     double temperature;
-
+    //Creates the LocationWeather object
     public LocationWeather(String cityName, double cityTemp) {
         this.name = cityName;
         this.temperature = cityTemp;
